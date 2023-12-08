@@ -1,6 +1,0 @@
-void DefendRightSide() {
-}
-
-void DefendLeftSide() {
-
-}
