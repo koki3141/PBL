@@ -1,3 +1,6 @@
+double distanceFromSensor(int echo_pin, int trig_pin);
+double durationToCm(double duration);
+
 void runPk() {
   const int EXPECT_DISTANCE = 100; //the expect distance
   double distance_from_right_sensor = distanceFromSensor(ECHO_PIN_RIGHT, TRIG_PIN_RIGHT);
