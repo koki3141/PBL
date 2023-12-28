@@ -3,8 +3,7 @@
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
 
-const int SERVO_MIN = 500;
-const int SERVO_MAX = 2400;
+
 const int ECHO_PIN_RIGHT = 2;
 const int TRIG_PIN_RIGHT = 3;
 const int ECHO_PIN_LEFT = 4;
@@ -16,7 +15,6 @@ const int MOTOR3 = 3;
 
 typedef struct {
   int pin;
-  bool reverse;
   int error;
   int number;
 } motorSetting;
@@ -34,26 +32,26 @@ typedef struct {
 } legAngle;
 
 const legSetting FOWARD_RIGHT_LEG = {
-  // pin番号, 逆, 誤差
-  { 0, false, 0, MOTOR1},
-  { 1, false, 0, MOTOR2},
-  { 2, false, 0, MOTOR3}
+  // pin番号, 誤差
+  { 12, 0, MOTOR1},
+  { 13, -5, MOTOR2},
+  { 14, 0, MOTOR3}
 };
 
 const legSetting FOWARD_LEFT_LEG = {
-  { 3, true, 0, MOTOR1},
-  { 4, false, 0, MOTOR2},
-  { 5, false, 0, MOTOR3}
+  { 8, 4, MOTOR1},
+  { 9, 0, MOTOR2},
+  { 10, 0, MOTOR3}
 };
 const legSetting BACK_RIGHT_LEG = {
-  { 6, false, 0, MOTOR1},
-  { 7, false, 0, MOTOR2},
-  { 8, false, 0, MOTOR3}
+  { 4, -5, MOTOR1},
+  { 5, -5, MOTOR2},
+  { 6, 0, MOTOR3}
 };
 const legSetting BACK_LEFT_LEG = {
-  { 9, true, 0, MOTOR1},
-  { 10, false, 0, MOTOR2},
-  { 11, false, 0, MOTOR3}
+  { 0, -4, MOTOR1},
+  { 1, 0, MOTOR2},
+  { 2, 0, MOTOR3}
 };
 
 
@@ -69,14 +67,26 @@ void setup() {
 
 void loop() {
   //Specifying actions
-  // runPk();
+  runPk();
   // runClime();
   // runPerformance();
+  // runStandard();
   // runtest();
 }
 
+void runStandard(){
+  legMove(FOWARD_RIGHT_LEG, {0, 0, 0});
+  legMove(BACK_LEFT_LEG, {0, 0, 0});
+  legMove(FOWARD_LEFT_LEG, {0, 0, 0});
+  legMove(BACK_RIGHT_LEG, {0, 0, 0});
+}
+
 void runtest() {
-  legMove(FOWARD_RIGHT_LEG, {150,150,150});
+  // legMove(FOWARD_RIGHT_LEG, {0, 0, 0});
+  specificMotorNumberMove(MOTOR1, 0);
+  // motorMove(BACK_RIGHT_LEG.motor2, 0);
+
+  delay(1000);
   delay(1000);
 }
 
@@ -85,37 +95,59 @@ void legMove(const legSetting& one_leg, const legAngle& leg_angle) {
   motorMove(one_leg.motor2, leg_angle.motor2);
   motorMove(one_leg.motor3, leg_angle.motor3);
 }
-
+int changeMotor1StandardAngle(const motorSetting& one_motor, int set_angle){
+  // foward_legは前に，back_legは後ろに動く．
+  const int STANDARD_ANGLE = 40;
+  int walk_angle;
+  if (FOWARD_RIGHT_LEG.motor1.pin == one_motor.pin){
+    walk_angle = set_angle - STANDARD_ANGLE;
+  } else if(FOWARD_LEFT_LEG.motor1.pin == one_motor.pin){
+    walk_angle = -set_angle + STANDARD_ANGLE;
+  } else if(BACK_RIGHT_LEG.motor1.pin == one_motor.pin){
+    walk_angle = set_angle + STANDARD_ANGLE;
+  } else if(BACK_LEFT_LEG.motor1.pin == one_motor.pin){
+    walk_angle = -set_angle - STANDARD_ANGLE;
+  }
+  return walk_angle;
+}
 void motorMove(const motorSetting& one_motor, int set_angle) {
-  const legAngle STANDARD_ANGLE = {90, 150, 20};
+  // const legAngle STANDARD_LEG_ANGLE = {90, 100, 120};
+  const legAngle STANDARD_LEG_ANGLE = {90, 150, 90};
+  const int SERVO_MIN = 500;
+  const int SERVO_MAX = 2400;
   
   set_angle = set_angle + one_motor.error;
   
   if (one_motor.number == MOTOR1){
-    if (one_motor.reverse){
-      set_angle = STANDARD_ANGLE.motor1 - set_angle;
-    } else {
-      set_angle = set_angle - STANDARD_ANGLE.motor1;
-    }
+    set_angle = changeMotor1StandardAngle(one_motor, set_angle);
+    set_angle = STANDARD_LEG_ANGLE.motor1 + set_angle;
   } else if (one_motor.number == MOTOR2){
-    set_angle = STANDARD_ANGLE.motor2 - set_angle;
+    set_angle = STANDARD_LEG_ANGLE.motor2 - set_angle;
   } else if (one_motor.number == MOTOR3){
-    set_angle = set_angle - STANDARD_ANGLE.motor3;
+    set_angle = STANDARD_LEG_ANGLE.motor3 + set_angle;
   } else {
     Serial.print("Not define motor number");
+    delay(100);
     exit(1);
   }
 
   if (set_angle < 10 || 170 < set_angle){
-    Serial.print("set angle is out of range");
-    Serial.print(set_angle);
+    Serial.print("pin number : ");
+    Serial.println(one_motor.pin);
+    Serial.print("motor number : ");
+    Serial.println(one_motor.number);
+  
+    Serial.print("set angle is out of range : ");
+    Serial.println(set_angle);
+    delay(100);
     exit(1);
   }
 
-  pwm.writeMicroseconds(one_motor.pin, set_angle);
+  int wirte_angle = map(set_angle, 0, 180, SERVO_MIN, SERVO_MAX);
+  pwm.writeMicroseconds(one_motor.pin, wirte_angle);
 }
 
-void specificMotorMove(const int motor_number, const int set_angle){
+void specificMotorNumberMove(const int motor_number, const int set_angle){
   if (motor_number == MOTOR1){
     motorMove(FOWARD_RIGHT_LEG.motor1, set_angle);
     motorMove(FOWARD_LEFT_LEG.motor1, set_angle);
