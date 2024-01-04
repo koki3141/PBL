@@ -12,7 +12,7 @@ void runClime() {
 }
 
 void runWalk() {
-  runStandard();
+  standardPosition();
   delay(1000);
 
   step1();
@@ -21,7 +21,7 @@ void runWalk() {
   step2();
   delay(1000);
 
-  runStandard();
+  standardPosition();
   delay(1000);
 
   step3();
@@ -35,29 +35,29 @@ void runWalk() {
 void step1() {
   const legAngle SUPPORT_LEG_ANGLE = {-10, 0, 0};
   const legAngle MOVE_LEG_ANGLE = {30, 0, -30};
-  legMove(FOWARD_RIGHT_LEG, MOVE_LEG_ANGLE);
-  legMove(BACK_LEFT_LEG, MOVE_LEG_ANGLE);
-  legMove(FOWARD_LEFT_LEG, SUPPORT_LEG_ANGLE);
-  legMove(BACK_RIGHT_LEG, SUPPORT_LEG_ANGLE);
+  moveLegAngle(FOWARD_RIGHT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(BACK_LEFT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(FOWARD_LEFT_LEG, SUPPORT_LEG_ANGLE);
+  moveLegAngle(BACK_RIGHT_LEG, SUPPORT_LEG_ANGLE);
 }
 
 void step2() {
   const legAngle MOVE_LEG_ANGLE = {30, 0, 0};
-  legMove(FOWARD_RIGHT_LEG, MOVE_LEG_ANGLE);
-  legMove(BACK_LEFT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(FOWARD_RIGHT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(BACK_LEFT_LEG, MOVE_LEG_ANGLE);
 }
 
 void step3() {
   const legAngle SUPPORT_LEG_ANGLE = {-10, 0, 0};
   const legAngle MOVE_LEG_ANGLE = {30, 0, -30};
-  legMove(FOWARD_RIGHT_LEG, SUPPORT_LEG_ANGLE);
-  legMove(BACK_LEFT_LEG, SUPPORT_LEG_ANGLE);
-  legMove(FOWARD_LEFT_LEG, MOVE_LEG_ANGLE);
-  legMove(BACK_RIGHT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(FOWARD_RIGHT_LEG, SUPPORT_LEG_ANGLE);
+  moveLegAngle(BACK_LEFT_LEG, SUPPORT_LEG_ANGLE);
+  moveLegAngle(FOWARD_LEFT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(BACK_RIGHT_LEG, MOVE_LEG_ANGLE);
 }
 
 void step4() {
   const legAngle MOVE_LEG_ANGLE = {30, 0, 0};
-  legMove(FOWARD_LEFT_LEG, MOVE_LEG_ANGLE);
-  legMove(BACK_RIGHT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(FOWARD_LEFT_LEG, MOVE_LEG_ANGLE);
+  moveLegAngle(BACK_RIGHT_LEG, MOVE_LEG_ANGLE);
 }
