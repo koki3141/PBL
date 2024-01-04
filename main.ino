@@ -54,6 +54,8 @@ const legSetting BACK_LEFT_LEG = {
   { 2, 0, MOTOR3}
 };
 
+int STANDARD_ANGLE = 0;
+legAngle STANDARD_LEG_ANGLE = {90, 150, 90};
 
 void setup() {
   pinMode(ECHO_PIN_RIGHT, INPUT);
@@ -67,11 +69,11 @@ void setup() {
 
 void loop() {
   //Specifying actions
-  runPk();
+  // runPk();
   // runClime();
   // runPerformance();
   // runStandard();
-  // runtest();
+  runtest();
 }
 
 void runStandard(){
@@ -83,10 +85,9 @@ void runStandard(){
 
 void runtest() {
   // legMove(FOWARD_RIGHT_LEG, {0, 0, 0});
-  specificMotorNumberMove(MOTOR1, 0);
-  // motorMove(BACK_RIGHT_LEG.motor2, 0);
-
+  specificMotorNumberMove(MOTOR2, 0);
   delay(1000);
+  specificMotorNumberMove(MOTOR2, 20);
   delay(1000);
 }
 
@@ -95,31 +96,30 @@ void legMove(const legSetting& one_leg, const legAngle& leg_angle) {
   motorMove(one_leg.motor2, leg_angle.motor2);
   motorMove(one_leg.motor3, leg_angle.motor3);
 }
-int changeMotor1StandardAngle(const motorSetting& one_motor, int set_angle){
+
+int adjustMotor1StandardAngle(const motorSetting& one_motor, int set_angle){
   // foward_legは前に，back_legは後ろに動く．
-  const int STANDARD_ANGLE = 40;
-  int walk_angle;
+  int adjust_angle;
   if (FOWARD_RIGHT_LEG.motor1.pin == one_motor.pin){
-    walk_angle = set_angle - STANDARD_ANGLE;
+    adjust_angle = set_angle - STANDARD_ANGLE;
   } else if(FOWARD_LEFT_LEG.motor1.pin == one_motor.pin){
-    walk_angle = -set_angle + STANDARD_ANGLE;
+    adjust_angle = -set_angle + STANDARD_ANGLE;
   } else if(BACK_RIGHT_LEG.motor1.pin == one_motor.pin){
-    walk_angle = set_angle + STANDARD_ANGLE;
+    adjust_angle = set_angle + STANDARD_ANGLE;
   } else if(BACK_LEFT_LEG.motor1.pin == one_motor.pin){
-    walk_angle = -set_angle - STANDARD_ANGLE;
+    adjust_angle = -set_angle - STANDARD_ANGLE;
   }
-  return walk_angle;
+  return adjust_angle;
 }
+
 void motorMove(const motorSetting& one_motor, int set_angle) {
-  // const legAngle STANDARD_LEG_ANGLE = {90, 100, 120};
-  const legAngle STANDARD_LEG_ANGLE = {90, 150, 90};
   const int SERVO_MIN = 500;
   const int SERVO_MAX = 2400;
   
   set_angle = set_angle + one_motor.error;
   
   if (one_motor.number == MOTOR1){
-    set_angle = changeMotor1StandardAngle(one_motor, set_angle);
+    set_angle = adjustMotor1StandardAngle(one_motor, set_angle);
     set_angle = STANDARD_LEG_ANGLE.motor1 + set_angle;
   } else if (one_motor.number == MOTOR2){
     set_angle = STANDARD_LEG_ANGLE.motor2 - set_angle;
@@ -136,7 +136,6 @@ void motorMove(const motorSetting& one_motor, int set_angle) {
     Serial.println(one_motor.pin);
     Serial.print("motor number : ");
     Serial.println(one_motor.number);
-  
     Serial.print("set angle is out of range : ");
     Serial.println(set_angle);
     delay(100);
