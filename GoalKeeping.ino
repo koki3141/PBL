@@ -3,7 +3,6 @@ double durationToCm(double duration);
 void displayDistance(double distance_from_sensor);
 
 void runGoalKeeping() {
-  setInitialPosition(GOAL_KEEPING_INITAL_POSITION);
 
   const int EXPECT_DISTANCE = 20; //the expect distance
   const legAngle DEFENT_LEG_ANGLE = {0, 30, 0};

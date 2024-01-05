@@ -13,10 +13,6 @@ const int SERVO_1 = 1;
 const int SERVO_2 = 2;
 const int SERVO_3 = 3;
 
-const int GOAL_KEEPING_INITAL_POSITION = 1;
-const int STAIRS_ClIMBING_INITAL_POSITION = 2;
-const int PERFORMACE_INITAL_POSITION = 3;
-
 typedef struct {
   int pin;
   int error;
@@ -61,6 +57,15 @@ const legSetting BACK_LEFT_LEG = {
 int ADJUSTMENT_SERVO_1_ANGLE;
 legAngle STANDARD_LEG_ANGLE;
 
+enum ActionType {
+ GOAL_KEEPING,
+ STAIRS_CLIMBING,
+ PERFORMANCE,
+ TEST
+};
+
+const ActionType SELECT_ACTION = STAIRS_CLIMBING;
+
 void setup() {
   pinMode(ECHO_PIN_RIGHT, INPUT);
   pinMode(TRIG_PIN_RIGHT, OUTPUT);
@@ -69,15 +74,30 @@ void setup() {
   pwm.begin();
   pwm.setPWMFreq(50);
   Serial.begin(9600);
+
+  setInitialPosition(SELECT_ACTION);
+  standardPosition();
+  delay(500);
 }
 
 void loop() {
-  //seting actions
-  // runGoalKeeping();
-  runStairsClimbing();
-  // runPerformance();
-  // runtest();
+ switch(SELECT_ACTION) {
+  case STAIRS_CLIMBING:
+    runStairsClimbing();
+    break;
+  case GOAL_KEEPING:
+    runGoalKeeping();
+    break;
+  case PERFORMANCE:
+    runPerformance();
+    break;
+  case TEST:
+    runtest();
+  default:
+    break;
+ }
 }
+
 
 void standardPosition(){
   Serial.println("standardPosition");
@@ -88,11 +108,11 @@ void standardPosition(){
 }
 
 void runtest() {  
-  setInitialPosition(STAIRS_ClIMBING_INITAL_POSITION);
+  setInitialPosition(SELECT_ACTION);
   
   standardPosition();
 
-  ///testOneServoAngle();
+  // testOneServoAngle();
 }
 
 void testOneLegAngle(){
@@ -113,21 +133,26 @@ void testOneServoAngle(){
   delay(1000);
 }
 
-void setInitialPosition(const int Initial_position) {
-  if (Initial_position == STAIRS_ClIMBING_INITAL_POSITION){
+void setInitialPosition(ActionType initial_position) {
+  switch(initial_position) {
+  case STAIRS_CLIMBING:
     STANDARD_LEG_ANGLE = {90, 120, 150};
     ADJUSTMENT_SERVO_1_ANGLE = 40;
-  } else if (Initial_position == GOAL_KEEPING_INITAL_POSITION){
+    break;
+  case GOAL_KEEPING:
+  case PERFORMANCE:
     STANDARD_LEG_ANGLE = {90, 150, 90};
     ADJUSTMENT_SERVO_1_ANGLE = 0;
-  } else if (Initial_position == PERFORMACE_INITAL_POSITION){
+    break;
+  case TEST:
     STANDARD_LEG_ANGLE = {90, 150, 90};
     ADJUSTMENT_SERVO_1_ANGLE = 0;
-  } else {
-    STANDARD_LEG_ANGLE = {90, 150, 90};
-    ADJUSTMENT_SERVO_1_ANGLE = 0;
+    break;
+  default:
+    break;
   }
 }
+
 
 void setLegAngle(const legSetting& one_leg, const legAngle& leg_angle) {
   setServoAngle(one_leg.servo1, leg_angle.servo1);
