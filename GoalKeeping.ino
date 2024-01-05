@@ -2,10 +2,9 @@ double distanceFromSensor(int echo_pin, int trig_pin);
 double durationToCm(double duration);
 void displayDistance(double distance_from_sensor);
 
-void runPk() {
-  legAngle STANDARD_LEG_ANGLE = {90, 150, 90};
-  STANDARD_ANGLE = 0;
-  
+void runGoalKeeping() {
+  setInitialPosition(GOAL_KEEPING_INITAL_POSITION);
+
   const int EXPECT_DISTANCE = 20; //the expect distance
   const legAngle DEFENT_LEG_ANGLE = {0, 30, 0};
 

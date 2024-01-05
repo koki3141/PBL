@@ -13,6 +13,10 @@ const int SERVO_1 = 1;
 const int SERVO_2 = 2;
 const int SERVO_3 = 3;
 
+const int GOAL_KEEPING_INITAL_POSITION = 1;
+const int STAIRS_ClIMBING_INITAL_POSITION = 2;
+const int PERFORMACE_INITAL_POSITION = 3;
+
 typedef struct {
   int pin;
   int error;
@@ -34,27 +38,27 @@ typedef struct {
 const legSetting FOWARD_RIGHT_LEG = {
   // pin番号, 誤差
   { 12, 0, SERVO_1},
-  { 13, -5, SERVO_2},
+  { 13, 5, SERVO_2},
   { 14, 0, SERVO_3}
 };
 
 const legSetting FOWARD_LEFT_LEG = {
   { 8, 4, SERVO_1},
   { 9, 0, SERVO_2},
-  { 10, 0, SERVO_3}
+  { 10, -5, SERVO_3}
 };
 const legSetting BACK_RIGHT_LEG = {
   { 4, -5, SERVO_1},
-  { 5, -5, SERVO_2},
+  { 5, 10, SERVO_2},
   { 6, 0, SERVO_3}
 };
 const legSetting BACK_LEFT_LEG = {
   { 0, -4, SERVO_1},
   { 1, 0, SERVO_2},
-  { 2, 0, SERVO_3}
+  { 2, -5, SERVO_3}
 };
 
-int STANDARD_ANGLE;
+int ADJUSTMENT_SERVO_1_ANGLE;
 legAngle STANDARD_LEG_ANGLE;
 
 void setup() {
@@ -69,28 +73,45 @@ void setup() {
 
 void loop() {
   //seting actions
-  // runPk();
-  // runClime();
+  // runGoalKeeping();
+  // runStairsClimbing();
   // runPerformance();
   runtest();
 }
 
 void standardPosition(){
+  Serial.println("standardPosition");
   setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
   setLegAngle(BACK_LEFT_LEG, {0, 0, 0});
   setLegAngle(FOWARD_LEFT_LEG, {0, 0, 0});
   setLegAngle(BACK_RIGHT_LEG, {0, 0, 0});
 }
 
-void runtest() {
-    
-  STANDARD_ANGLE = 0;
-  STANDARD_LEG_ANGLE = {90, 150, 90};
+void runtest() {  
+  setInitialPosition(0);
+  standardPosition();
   // setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
-  setServo1Angle(0);
-  setServo2Angle(0);
-  setServo3Angle(0);
-  delay(1000);
+  // delay(1000);
+
+  // setLegAngle(FOWARD_RIGHT_LEG, {30, 20, 20});
+  // delay(1000);
+
+}
+
+void setInitialPosition(const int Initial_position) {
+  if (Initial_position == STAIRS_ClIMBING_INITAL_POSITION){
+    STANDARD_LEG_ANGLE = {90, 100, 120};
+    ADJUSTMENT_SERVO_1_ANGLE = 40;
+  } else if (Initial_position == GOAL_KEEPING_INITAL_POSITION){
+    STANDARD_LEG_ANGLE = {90, 150, 90};
+    ADJUSTMENT_SERVO_1_ANGLE = 0;
+  } else if (Initial_position == PERFORMACE_INITAL_POSITION){
+    STANDARD_LEG_ANGLE = {90, 150, 90};
+    ADJUSTMENT_SERVO_1_ANGLE = 0;
+  } else {
+    STANDARD_LEG_ANGLE = {90, 150, 90};
+    ADJUSTMENT_SERVO_1_ANGLE = 0;
+  }
 }
 
 void setLegAngle(const legSetting& one_leg, const legAngle& leg_angle) {
@@ -122,8 +143,9 @@ void setServo3Angle(const int set_angle){
 
 void setServoAngle(const servoSetting& one_servo, int set_angle) {  
   int adjusted_angle;
+
   if (one_servo.number == SERVO_1){
-    adjusted_angle = getAdjustServo1Angle(one_servo, set_angle) + one_servo.error;
+    adjusted_angle = getAdjustServo_1Angle(one_servo, set_angle) + one_servo.error;
   } else if (one_servo.number == SERVO_2){
     adjusted_angle = STANDARD_LEG_ANGLE.servo2 - set_angle + one_servo.error;
   } else if (one_servo.number == SERVO_3){
@@ -135,35 +157,38 @@ void setServoAngle(const servoSetting& one_servo, int set_angle) {
   }
 
   checkAngleRange(one_servo, adjusted_angle);
+
   writeServo(one_servo, adjusted_angle);
 }
 
-int getAdjustServo1Angle(const servoSetting& one_servo, int set_angle){
+int getAdjustServo_1Angle(const servoSetting& one_servo, int set_angle){
   // foward_legは前に，back_legは後ろに動く．
   int adjust_angle;
+
   if (FOWARD_RIGHT_LEG.servo1.pin == one_servo.pin){
-    adjust_angle = set_angle - STANDARD_ANGLE;
+    adjust_angle = set_angle - ADJUSTMENT_SERVO_1_ANGLE;
   } else if(FOWARD_LEFT_LEG.servo1.pin == one_servo.pin){
-    adjust_angle = -set_angle + STANDARD_ANGLE;
+    adjust_angle = -set_angle + ADJUSTMENT_SERVO_1_ANGLE;
   } else if(BACK_RIGHT_LEG.servo1.pin == one_servo.pin){
-    adjust_angle = set_angle + STANDARD_ANGLE;
+    adjust_angle = set_angle + ADJUSTMENT_SERVO_1_ANGLE;
   } else if(BACK_LEFT_LEG.servo1.pin == one_servo.pin){
-    adjust_angle = -set_angle - STANDARD_ANGLE;
+    adjust_angle = -set_angle - ADJUSTMENT_SERVO_1_ANGLE;
   }
+
   return STANDARD_LEG_ANGLE.servo1 + adjust_angle;
 }
 
-void checkAngleRange(const servoSetting& one_servo, const int set_angle) {
+void checkAngleRange(const servoSetting& one_servo, const int adjusted_angle) {
   const int MIN_ANGLE = 10;
   const int MAX_ANGLE = 170;
 
-  if (set_angle < MIN_ANGLE || MAX_ANGLE < set_angle){
+  if (adjusted_angle < MIN_ANGLE || MAX_ANGLE < adjusted_angle){
     Serial.print("pin number : ");
     Serial.println(one_servo.pin);
     Serial.print("servo number : ");
     Serial.println(one_servo.number);
-    Serial.print("set angle is out of range : ");
-    Serial.println(set_angle);
+    Serial.print("adjusted angle is out of range : ");
+    Serial.println(adjusted_angle);
     delay(100);
     exit(1);
   }

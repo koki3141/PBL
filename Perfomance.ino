@@ -1,8 +1,7 @@
 void roll(const legSetting& one_leg);
 
 void runPerformance() {
-  legAngle STANDARD_LEG_ANGLE = {90, 150, 90};
-  STANDARD_ANGLE = 0;
+  setInitialPosition(PERFORMACE_INITAL_POSITION);
 
   standardPosition();
   delay(1000);
