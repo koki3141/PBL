@@ -64,7 +64,7 @@ enum ActionType {
  TEST
 };
 
-const ActionType SELECT_ACTION = STAIRS_CLIMBING;
+const ActionType SELECT_ACTION = TEST;
 
 void setup() {
   pinMode(ECHO_PIN_RIGHT, INPUT);
@@ -140,8 +140,11 @@ void setInitialPosition(ActionType initial_position) {
     ADJUSTMENT_SERVO_1_ANGLE = 40;
     break;
   case GOAL_KEEPING:
+    STANDARD_LEG_ANGLE = {90, 70, 90};
+    ADJUSTMENT_SERVO_1_ANGLE = 0;
+    break;
   case PERFORMANCE:
-    STANDARD_LEG_ANGLE = {90, 150, 90};
+    STANDARD_LEG_ANGLE = {90, 150, 170};
     ADJUSTMENT_SERVO_1_ANGLE = 0;
     break;
   case TEST:

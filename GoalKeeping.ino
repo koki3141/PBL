@@ -5,7 +5,7 @@ void displayDistance(double distance_from_sensor);
 void runGoalKeeping() {
 
   const int EXPECT_DISTANCE = 20; //the expect distance
-  const legAngle DEFENT_LEG_ANGLE = {0, 30, 0};
+  const legAngle DEFENT_LEG_ANGLE = {0, 0, -50};
 
   double distance_from_right_sensor = distanceFromSensor(ECHO_PIN_RIGHT, TRIG_PIN_RIGHT);
   double distance_from_left_sensor = distanceFromSensor(ECHO_PIN_LEFT, TRIG_PIN_LEFT);
@@ -18,7 +18,8 @@ void runGoalKeeping() {
     setLegAngle(BACK_LEFT_LEG, DEFENT_LEG_ANGLE);
     Serial.println("left");
   } else {
-    Serial.println("strike");
+    setLegAngle(FOWARD_RIGHT_LEG, DEFENT_LEG_ANGLE);
+
   }
 }
 
