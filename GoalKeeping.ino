@@ -12,13 +12,13 @@ void runGoalKeeping() {
 
   
   if (distance_from_left_sensor > EXPECT_DISTANCE && distance_from_right_sensor < EXPECT_DISTANCE) {
-    setLegAngle(FOWARD_RIGHT_LEG, DEFENT_LEG_ANGLE);
+    setLegAngle(FRONT_LEG, DEFENT_LEG_ANGLE);
     Serial.println("right");
   } else if (distance_from_left_sensor < EXPECT_DISTANCE && distance_from_right_sensor > EXPECT_DISTANCE) {
-    setLegAngle(BACK_LEFT_LEG, DEFENT_LEG_ANGLE);
+    setLegAngle(RIGHT_LEG, DEFENT_LEG_ANGLE);
     Serial.println("left");
   } else {
-    setLegAngle(FOWARD_RIGHT_LEG, DEFENT_LEG_ANGLE);
+    setLegAngle(FRONT_LEG, DEFENT_LEG_ANGLE);
 
   }
 }

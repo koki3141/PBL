@@ -31,28 +31,33 @@ typedef struct {
   int servo3;
 } legAngle;
 
-const legSetting FOWARD_RIGHT_LEG = {
+const legSetting FRONT_LEG = {
   // pin番号, 誤差
   { 12, 0, SERVO_1},
   { 13, 5, SERVO_2},
   { 14, 0, SERVO_3}
 };
 
-const legSetting FOWARD_LEFT_LEG = {
+const legSetting LEFT_LEG = {
   { 8, -5, SERVO_1},
   { 9, 0, SERVO_2},
   { 10, -5, SERVO_3}
 };
-const legSetting BACK_RIGHT_LEG = {
+const legSetting BACK_LEG = {
   { 4, 5, SERVO_1},
   { 5, 10, SERVO_2},
   { 6, 0, SERVO_3}
 };
-const legSetting BACK_LEFT_LEG = {
+const legSetting RIGHT_LEG = {
   { 0, -4, SERVO_1},
   { 1, 0, SERVO_2},
   { 2, -5, SERVO_3}
 };
+
+typedef struct {
+  legSetting front;
+  legSetting back;
+} pairLegs;
 
 int ADJUSTMENT_SERVO_1_ANGLE;
 legAngle STANDARD_LEG_ANGLE;
@@ -101,10 +106,10 @@ void loop() {
 
 void standardPosition(){
   Serial.println("standardPosition");
-  setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
-  setLegAngle(BACK_LEFT_LEG, {0, 0, 0});
-  setLegAngle(FOWARD_LEFT_LEG, {0, 0, 0});
-  setLegAngle(BACK_RIGHT_LEG, {0, 0, 0});
+  setLegAngle(FRONT_LEG, {0, 0, 0});
+  setLegAngle(RIGHT_LEG, {0, 0, 0});
+  setLegAngle(LEFT_LEG, {0, 0, 0});
+  setLegAngle(BACK_LEG, {0, 0, 0});
 }
 
 void runtest() {  
@@ -116,10 +121,10 @@ void runtest() {
 }
 
 void testOneLegAngle(){
-  setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
+  setLegAngle(FRONT_LEG, {0, 0, 0});
   delay(1000);
 
-  setLegAngle(FOWARD_RIGHT_LEG, {30, -20, -20});
+  setLegAngle(FRONT_LEG, {30, -20, -20});
   delay(1000);
 }
 
@@ -164,24 +169,24 @@ void setLegAngle(const legSetting& one_leg, const legAngle& leg_angle) {
 }
 
 void setServo1Angle(const int set_angle){
-  setServoAngle(FOWARD_RIGHT_LEG.servo1, set_angle);
-  setServoAngle(FOWARD_LEFT_LEG.servo1, set_angle);
-  setServoAngle(BACK_RIGHT_LEG.servo1, set_angle);
-  setServoAngle(BACK_LEFT_LEG.servo1, set_angle);
+  setServoAngle(FRONT_LEG.servo1, set_angle);
+  setServoAngle(LEFT_LEG.servo1, set_angle);
+  setServoAngle(BACK_LEG.servo1, set_angle);
+  setServoAngle(RIGHT_LEG.servo1, set_angle);
 }
 
 void setServo2Angle(const int set_angle){
-  setServoAngle(FOWARD_RIGHT_LEG.servo2, set_angle);
-  setServoAngle(FOWARD_LEFT_LEG.servo2, set_angle);
-  setServoAngle(BACK_RIGHT_LEG.servo2, set_angle);
-  setServoAngle(BACK_LEFT_LEG.servo2, set_angle);
+  setServoAngle(FRONT_LEG.servo2, set_angle);
+  setServoAngle(LEFT_LEG.servo2, set_angle);
+  setServoAngle(BACK_LEG.servo2, set_angle);
+  setServoAngle(RIGHT_LEG.servo2, set_angle);
 }
 
 void setServo3Angle(const int set_angle){
-  setServoAngle(FOWARD_RIGHT_LEG.servo3, set_angle);
-  setServoAngle(FOWARD_LEFT_LEG.servo3, set_angle);
-  setServoAngle(BACK_RIGHT_LEG.servo3, set_angle);
-  setServoAngle(BACK_LEFT_LEG.servo3, set_angle);
+  setServoAngle(FRONT_LEG.servo3, set_angle);
+  setServoAngle(LEFT_LEG.servo3, set_angle);
+  setServoAngle(BACK_LEG.servo3, set_angle);
+  setServoAngle(RIGHT_LEG.servo3, set_angle);
 }
 
 void setServoAngle(const servoSetting& one_servo, int set_angle) {  
@@ -207,13 +212,13 @@ void setServoAngle(const servoSetting& one_servo, int set_angle) {
 int getAdjustServo_1Angle(const servoSetting& one_servo, int set_angle){
   int adjust_angle;
 
-  if (FOWARD_RIGHT_LEG.servo1.pin == one_servo.pin){
+  if (FRONT_LEG.servo1.pin == one_servo.pin){
     adjust_angle = set_angle - ADJUSTMENT_SERVO_1_ANGLE;
-  } else if(FOWARD_LEFT_LEG.servo1.pin == one_servo.pin){
+  } else if(LEFT_LEG.servo1.pin == one_servo.pin){
     adjust_angle = -set_angle + ADJUSTMENT_SERVO_1_ANGLE;
-  } else if(BACK_RIGHT_LEG.servo1.pin == one_servo.pin){
+  } else if(BACK_LEG.servo1.pin == one_servo.pin){
     adjust_angle = set_angle + ADJUSTMENT_SERVO_1_ANGLE;
-  } else if(BACK_LEFT_LEG.servo1.pin == one_servo.pin){
+  } else if(RIGHT_LEG.servo1.pin == one_servo.pin){
     adjust_angle = -set_angle - ADJUSTMENT_SERVO_1_ANGLE;
   }
 

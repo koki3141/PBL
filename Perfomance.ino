@@ -6,13 +6,13 @@ void step4(const legSetting& one_leg);
 
 void runPerformance() {
 
-  roll(FOWARD_RIGHT_LEG);
+  roll(FRONT_LEG);
 
-  roll(BACK_LEFT_LEG);
+  roll(RIGHT_LEG);
 
-  roll(FOWARD_LEFT_LEG);
+  roll(LEFT_LEG);
 
-  roll(BACK_RIGHT_LEG);
+  roll(BACK_LEG);
 
 }
 
