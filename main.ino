@@ -43,12 +43,12 @@ const legSetting FOWARD_RIGHT_LEG = {
 };
 
 const legSetting FOWARD_LEFT_LEG = {
-  { 8, 4, SERVO_1},
+  { 8, -5, SERVO_1},
   { 9, 0, SERVO_2},
   { 10, -5, SERVO_3}
 };
 const legSetting BACK_RIGHT_LEG = {
-  { 4, -5, SERVO_1},
+  { 4, 5, SERVO_1},
   { 5, 10, SERVO_2},
   { 6, 0, SERVO_3}
 };
@@ -74,9 +74,9 @@ void setup() {
 void loop() {
   //seting actions
   // runGoalKeeping();
-  // runStairsClimbing();
+  runStairsClimbing();
   // runPerformance();
-  runtest();
+  // runtest();
 }
 
 void standardPosition(){
@@ -88,19 +88,34 @@ void standardPosition(){
 }
 
 void runtest() {  
-  setInitialPosition(0);
+  setInitialPosition(STAIRS_ClIMBING_INITAL_POSITION);
+  
   standardPosition();
-  // setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
-  // delay(1000);
 
-  // setLegAngle(FOWARD_RIGHT_LEG, {30, 20, 20});
-  // delay(1000);
+  ///testOneServoAngle();
+}
 
+void testOneLegAngle(){
+  setLegAngle(FOWARD_RIGHT_LEG, {0, 0, 0});
+  delay(1000);
+
+  setLegAngle(FOWARD_RIGHT_LEG, {30, -20, -20});
+  delay(1000);
+}
+
+void testOneServoAngle(){
+  setServo2Angle(0);
+  setServo3Angle(0);
+  delay(1000);
+
+  setServo2Angle(30);
+  setServo3Angle(-30);
+  delay(1000);
 }
 
 void setInitialPosition(const int Initial_position) {
   if (Initial_position == STAIRS_ClIMBING_INITAL_POSITION){
-    STANDARD_LEG_ANGLE = {90, 100, 120};
+    STANDARD_LEG_ANGLE = {90, 120, 150};
     ADJUSTMENT_SERVO_1_ANGLE = 40;
   } else if (Initial_position == GOAL_KEEPING_INITAL_POSITION){
     STANDARD_LEG_ANGLE = {90, 150, 90};
@@ -162,7 +177,6 @@ void setServoAngle(const servoSetting& one_servo, int set_angle) {
 }
 
 int getAdjustServo_1Angle(const servoSetting& one_servo, int set_angle){
-  // foward_legは前に，back_legは後ろに動く．
   int adjust_angle;
 
   if (FOWARD_RIGHT_LEG.servo1.pin == one_servo.pin){
@@ -175,7 +189,7 @@ int getAdjustServo_1Angle(const servoSetting& one_servo, int set_angle){
     adjust_angle = -set_angle - ADJUSTMENT_SERVO_1_ANGLE;
   }
 
-  return STANDARD_LEG_ANGLE.servo1 + adjust_angle;
+  return adjust_angle + STANDARD_LEG_ANGLE.servo1;
 }
 
 void checkAngleRange(const servoSetting& one_servo, const int adjusted_angle) {
